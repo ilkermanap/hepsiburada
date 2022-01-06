@@ -9,11 +9,14 @@ class Marka(UzakSayfa):
         UzakSayfa.__init__(self, URL+"/"+marka)
         self.sayfa_sayisi = 0
         self.urun_listesi = {}
-
-    def sayfalar(self):
         pagination = self.soup.select_one(".pagination")
         li = pagination.find_all("li")
         self.sayfa_sayisi = int(li[-1].text)
+
+    def tum_urunler(self):
+        for sayfa in range(1, self.sayfa_sayisi+1):
+            self.urunler(sayfano=sayfa)
+        return self.urun_listesi
 
     def urunler(self, sayfano=1):
         content = None

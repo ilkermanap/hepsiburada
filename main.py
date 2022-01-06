@@ -3,11 +3,7 @@ import sys
 
 nike = Marka("nike")
 
-nike.sayfalar()
+urunler = nike.tum_urunler()
 
-nike.urunler(sayfano=3)
-
-for sku, urun in nike.urun_listesi.items():
+for sku, urun in urunler.items():
     print(sku, urun.price)
-    urun.yorumlar()
-    sys.exit()
