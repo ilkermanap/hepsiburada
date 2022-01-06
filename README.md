@@ -9,5 +9,4 @@ Hepsiburada Urun Bilgisi Cekme
     
     for sku, urun in nike.urun_listesi.items():
         print(sku, urun.price)
-        urun.yorumlar()
-        sys.exit()
+      
