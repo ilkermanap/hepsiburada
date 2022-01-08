@@ -1,5 +1,5 @@
-
 from websayfa import UzakSayfa
+import sys
 
 URL="https://www.hepsiburada.com"
 
@@ -16,6 +16,7 @@ class Marka(UzakSayfa):
     def tum_urunler(self):
         for sayfa in range(1, self.sayfa_sayisi+1):
             self.urunler(sayfano=sayfa)
+            return self.urun_listesi
         return self.urun_listesi
 
     def urunler(self, sayfano=1):
@@ -61,8 +62,47 @@ class Urun:
         self.title = None
         self.first_price = None
         self.second_price = None
+        self.soup = None
+        self.yorum = []
 
     def yorumlar(self):
         yorum = UzakSayfa(f"{URL}{self.url}-yorumlari")
-        print(yorum.icerik)
-        print(yorum.url)
+        self.soup = yorum.soup
+        pagination = yorum.soup.select_one(".paginationBarHolder")
+        li = pagination.find_all("li")
+        sayfa_sayisi = int(li[-1].text)
+        self.yorum_sayfasi(1)
+
+    def yorum_sayfasi(self, sayfano):
+        soup = None
+        if sayfano == 1:
+            soup = self.soup
+        else:
+            temp = UzakSayfa(f"{URL}{self.url}-yorumlari?sayfa={sayfano}")
+            soup = temp.soup
+        yorum_divs = soup.select_one(".paginationContentHolder")
+        yorum_listesi = yorum_divs.find_all("div", recursive = False)
+        for yorumcart in yorum_listesi:
+            #her bir yorum cart, bir yorumun tum bilgilerini icerir
+            self.yorum.append(Yorum(yorumcart))
+            sys.exit()
+
+
+class Yorum:
+    date_published = None
+    author = None
+    author_age = None
+    description = None
+    
+    def __init__(self, soup):
+        divs = soup.find_all("div", recursive=False)
+        content = divs[1]
+        subdivs = content.find_all("div", recursive=False)
+        print("---",len(subdivs))
+        print(subdivs[0].text)
+        print("---------------------------")
+        spans = subdivs[0].find_all("span")
+        for i, sp in enumerate(spans):
+            print(i, sp.attrs.keys(), list(sp.attrs.items()))
+            
+    
