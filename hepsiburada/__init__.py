@@ -3,6 +3,12 @@ import sys
 
 URL="https://www.hepsiburada.com"
 
+soup_mapping = {
+
+
+}
+
+
 class Marka(UzakSayfa):
     def __init__(self, marka):
         self.marka = marka
@@ -38,13 +44,22 @@ class Marka(UzakSayfa):
                 temp.rating = None
             temp.title = product.find(class_ = "product-title").attrs["title"]
 
-            fp = float(product.find("div", class_="first-price-area").find("span").text.replace(".","").replace(",",".").split()[0])
+            fp = float(product.find("div", class_="first-price-area").find("span").text.replace(".", "").replace(",", ".").split()[0])
             temp.first_price = fp
 
             try:
-                temp.second_price = float(product.find("div", class_="second-price-area").find("span").text.replace(".","").replace(",",".").split()[0])
+                temp.second_price = float(product.find("div", class_="second-price-area").find("span").text.replace(".", "").replace(",", ".").split()[0])
             except AttributeError:
                 pass
+
+            resimler = product.find_all("img", class_="product-image")
+            for resim in resimler:
+                attribstr = resim.attrs["data-bind"]
+                parts = attribstr.split("'")
+                for part in parts:
+                    if part.find("hepsiburada") > 0:
+                        temp.resim_ekle(part.split()[0])
+            print(temp.resimler)
             self.urun_listesi[temp.sku] = temp
 
 class Urun:
@@ -64,6 +79,11 @@ class Urun:
         self.second_price = None
         self.soup = None
         self.yorum = []
+        self.resimler = []
+
+    def resim_ekle(self, yeni_url):
+        if yeni_url not in self.resimler:
+            self.resimler.append(yeni_url)
 
     def yorumlar(self):
         yorum = UzakSayfa(f"{URL}{self.url}-yorumlari")
