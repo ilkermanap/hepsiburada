@@ -5,7 +5,4 @@ nike = Marka("nike")
 
 urunler = nike.tum_urunler()
 
-for sku, urun in urunler.items():
-    print(sku, urun.price)
-    urun.yorumlar()
-    sys.exit()
+nike.csv()
